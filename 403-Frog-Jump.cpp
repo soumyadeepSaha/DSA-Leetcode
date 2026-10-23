@@ -1,47 +1,78 @@
 class Solution {
 public:
-    int rec(int i, vector<int>& stones, int n,
-             unordered_map<double, int>& mpp, double jumps,vector<vector<double>>&dp) {
+    // int rec(int i, vector<int>& stones, int n, unordered_map<int, int>& mpp,
+    //         double jumps, vector<vector<int>>& dp) {
 
-        if (i == stones.size() - 1)
-            return true;
+    //     if (i == stones.size() - 1)
+    //         return true;
 
-        if(dp[i][jumps]!=-1)return dp[i][jumps];
-        
-        bool ans = false;
-        for (int jp = jumps - 1; jp <= jumps + 1; jp++) {
+    //     if (dp[i][jumps] != -1)
+    //         return dp[i][jumps];
 
-            if (jp <= 0)
-                continue;
+    //     bool ans = false;
+    //     for (int jp = jumps - 1; jp <= jumps + 1; jp++) {
 
-            // now i have different combination and i will check if he can take
-            // the jump and then he will jump if he can
+    //         if (jp <= 0)
+    //             continue;
 
-            double j = stones[i] + jp;
+    //         // now i have different combination and i will check if he can take
+    //         // the jump and then he will jump if he can
 
-            if (mpp.find(j) != mpp.end()) {
+    //         double j = stones[i] + jp;
 
-                ans = rec(mpp[j], stones, n, mpp, jp,dp);
-            }
+    //         if (mpp.find(j) != mpp.end()) {
 
-            if (ans)
-                return dp[i][jumps]=ans;
-        }
+    //             ans = rec(mpp[j], stones, n, mpp, jp, dp);
+    //         }
 
-        return dp[i][jumps]=false;
-    }
+    //         if (ans)
+    //             return dp[i][jumps] = ans;
+    //     }
+
+    //     return dp[i][jumps] = false;
+    // }
 
     bool canCross(vector<int>& stones) {
+
         int n = stones.size();
-        unordered_map<double, int> mpp;
+        unordered_map<int, int> mpp;
         for (int i = 0; i < stones.size(); i++)
             mpp[stones[i]] = i;
 
         if (stones[1] != 1)
             return false;
-      
-         vector<vector<double>>dp(n+1,vector<double>(n+1,-1));
 
-        return rec(1, stones, n, mpp, 1,dp);
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+
+       for (int jumps = 0; jumps <= n; jumps++)
+            dp[n - 1][jumps] = true;
+
+        
+        for (int i = n - 2; i >= 1; i--) {
+
+            for (int jumps = n - 1; jumps >= 1; jumps--) {
+                for (int jp = jumps - 1; jp <= jumps + 1; jp++) {
+                 bool ans=false;
+                    if (jp <= 0 || jp>n)
+                        continue;
+
+                    // now i have different combination and i will check if he
+                    // can take the jump and then he will jump if he can
+
+                    int j = stones[i] + jp;
+
+                    if (mpp.find(j) != mpp.end()) {
+
+                        ans = dp[mpp[j]][jp];
+                    }
+
+                    if (ans)
+                        dp[i][jumps] = ans;
+                }
+    
+            }
+        }
+
+        return dp[1][1];
     }
 };
